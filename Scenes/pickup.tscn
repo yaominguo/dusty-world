@@ -14,3 +14,5 @@ shape = SubResource("RectangleShape2D_co5s4")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_ddd5s")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

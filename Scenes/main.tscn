@@ -1,15 +1,17 @@
-[gd_scene load_steps=15 format=3 uid="uid://dsdsbr4px3r6w"]
+[gd_scene load_steps=19 format=3 uid="uid://dsdsbr4px3r6w"]
 
 [ext_resource type="Texture2D" uid="uid://ckx6cfsnq6t2b" path="res://Assets/Atlas.png" id="1_3pm7u"]
 [ext_resource type="PackedScene" uid="uid://cjmf2r7dnrjoa" path="res://Scenes/player.tscn" id="1_7u7q8"]
 [ext_resource type="Script" path="res://Scripts/main.gd" id="1_qoexx"]
 [ext_resource type="Texture2D" uid="uid://fgjxr4il205f" path="res://Assets/Water.png" id="2_228vl"]
-[ext_resource type="Script" path="res://GUI/health.gd" id="5_xfoef"]
-[ext_resource type="Script" path="res://GUI/stamina.gd" id="6_qpoy0"]
+[ext_resource type="Script" path="res://GUI/AmmoAmount.gd" id="7_l6ekb"]
 [ext_resource type="Texture2D" uid="uid://b6wahuhdh6mbg" path="res://Assets/Icons/shard_01i.png" id="7_qteow"]
 [ext_resource type="FontFile" uid="uid://lxeddhw7kru1" path="res://Assets/Font/ARCADECLASSIC.TTF" id="8_t4xi4"]
 [ext_resource type="Texture2D" uid="uid://c4xvnv66nrhov" path="res://Assets/Icons/potion_02c.png" id="9_rexn0"]
+[ext_resource type="Script" path="res://GUI/HealthAmount.gd" id="10_1eats"]
 [ext_resource type="Texture2D" uid="uid://c165g8lnh74xn" path="res://Assets/Icons/potion_02b.png" id="10_rp4oi"]
+[ext_resource type="PackedScene" uid="uid://dhg57405nx8mk" path="res://Scenes/pickup.tscn" id="11_3fs4m"]
+[ext_resource type="Script" path="res://GUI/StaminaAmount.gd" id="12_uqhqa"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_0bcg6"]
 tile_data = PackedInt32Array(65536, 2162688, 30, 131072, 2162688, 31, 196608, 2162688, 32, 262144, 2162688, 33, 1, 2228224, 29, 65537, 2228224, 30, 131073, 2228224, 31, 196609, 2228224, 32, 262145, 2228224, 33, 327681, 2228224, 34, 2, 2293760, 29, 65538, 2293760, 30, 131074, 2293760, 31, 196610, 2293760, 32, 262146, 2293760, 33, 327682, 2293760, 34, 65539, 2359296, 30, 131075, 2359296, 31, 196611, 2359296, 32, 262147, 2359296, 33)
@@ -6255,8 +6257,23 @@ sources/1 = SubResource("TileSetAtlasSource_8kgae")
 sources/0 = SubResource("TileSetAtlasSource_cdug4")
 pattern_0 = SubResource("TileMapPattern_0bcg6")
 
+[sub_resource type="GDScript" id="GDScript_vylxy"]
+script/source = "extends ColorRect
+
+@onready var value = $Value
+
+func update_health(health, max_health):
+  value.size.x = 98 * health / max_health"
+
+[sub_resource type="GDScript" id="GDScript_vgvn5"]
+script/source = "extends ColorRect
+
+@onready var value = $Value
+
+func update_stamina(stamina, max_stamina):
+  value.size.x = 98 * stamina / max_stamina"
+
 [node name="Main" type="Node2D"]
-visible = false
 script = ExtResource("1_qoexx")
 
 [node name="Map" type="TileMap" parent="."]
@@ -6296,7 +6313,7 @@ offset_top = 155.0
 offset_right = 105.0
 offset_bottom = 165.0
 color = Color(0.227451, 0.223529, 0.207843, 0.415686)
-script = ExtResource("5_xfoef")
+script = SubResource("GDScript_vylxy")
 
 [node name="Value" type="ColorRect" parent="UI/HealthBar"]
 layout_mode = 1
@@ -6319,7 +6336,7 @@ offset_top = 165.0
 offset_right = 105.0
 offset_bottom = 175.0
 color = Color(0.227451, 0.223529, 0.207843, 0.415686)
-script = ExtResource("6_qpoy0")
+script = SubResource("GDScript_vgvn5")
 
 [node name="Value" type="ColorRect" parent="UI/StaminaBar"]
 layout_mode = 1
@@ -6342,6 +6359,7 @@ offset_top = 8.0
 offset_right = 45.0
 offset_bottom = 28.0
 color = Color(0.227451, 0.223529, 0.207843, 0.415686)
+script = ExtResource("7_l6ekb")
 
 [node name="Icon" type="Sprite2D" parent="UI/AmmoAmount"]
 position = Vector2(10, 10)
@@ -6371,6 +6389,7 @@ offset_top = 8.0
 offset_right = 90.0
 offset_bottom = 28.0
 color = Color(0.227451, 0.223529, 0.207843, 0.415686)
+script = ExtResource("10_1eats")
 
 [node name="Icon" type="Sprite2D" parent="UI/HealthAmount"]
 position = Vector2(10, 10)
@@ -6400,6 +6419,7 @@ offset_top = 8.0
 offset_right = 136.0
 offset_bottom = 28.0
 color = Color(0.227451, 0.223529, 0.207843, 0.415686)
+script = ExtResource("12_uqhqa")
 
 [node name="Icon" type="Sprite2D" parent="UI/StaminaAmount"]
 position = Vector2(10, 10)
@@ -6516,3 +6536,14 @@ theme_override_font_sizes/font_size = 15
 text = "1"
 horizontal_alignment = 2
 vertical_alignment = 1
+
+[node name="Pickup" parent="." instance=ExtResource("11_3fs4m")]
+position = Vector2(34, 83)
+item = 2
+
+[node name="Pickup2" parent="." instance=ExtResource("11_3fs4m")]
+position = Vector2(92, 48)
+
+[node name="Pickup3" parent="." instance=ExtResource("11_3fs4m")]
+position = Vector2(76, 99)
+item = 1

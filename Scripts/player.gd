@@ -2,6 +2,9 @@ extends CharacterBody2D
 
 signal health_updated
 signal stamina_updated
+signal ammo_pickups_updated
+signal health_pickups_updated
+signal stamina_pickups_updated
 
 @export var speed = 50
 
@@ -16,9 +19,18 @@ var stamina = 100
 var max_stamina = 100
 var regen_stamina = 5
 
+enum Pickups {AMMO, STAMINA, HEALTH}
+var ammo_pickup = 0
+var health_pickup = 0
+var stamina_pickup = 0
+
 func _ready():
 	health_updated.emit(health, max_health)
 	stamina_updated.emit(stamina, max_stamina)
+
+	ammo_pickups_updated.emit(ammo_pickup)
+	health_pickups_updated.emit(health_pickup)
+	stamina_pickups_updated.emit(stamina_pickup)
 
 func _process(delta):
 	var updated_health = min(health + regen_health * delta, max_health)
@@ -60,6 +72,18 @@ func _input(event):
 		is_attacking = true
 		animation = "attack_" + returned_direction(new_direaction)
 		$AnimatedSprite2D.play(animation)
+	elif event.is_action_pressed("ui_consume_health"):
+		if health > 0 && health_pickup > 0:
+			health_pickup -= 1
+			health = min(health + 50, max_health)
+			health_updated.emit(health, max_health)
+			health_pickups_updated.emit(health_pickup)
+	elif event.is_action_pressed("ui_consume_stamina"):
+		if stamina > 0 && stamina_pickup > 0:
+			stamina_pickup -= 1
+			stamina = min(stamina + 50, max_stamina)
+			stamina_updated.emit(stamina, max_stamina)
+			stamina_pickups_updated.emit(stamina_pickup)
 
 func play_animations(direction: Vector2):
 	if direction != Vector2.ZERO:
@@ -88,3 +112,18 @@ func returned_direction(direction: Vector2):
 
 func _on_animated_sprite_2d_animation_finished():
 	is_attacking = false
+
+
+func add_pickup(item):
+	if item == Pickups.AMMO:
+		ammo_pickup += 3
+		ammo_pickups_updated.emit(ammo_pickup)
+		print("ammo val: " + str(ammo_pickup))
+	elif item == Pickups.HEALTH:
+		health_pickup += 1
+		health_pickups_updated.emit(health_pickup)
+		print("health val: " + str(health_pickup))
+	elif item == Pickups.STAMINA:
+		stamina_pickup += 1
+		stamina_pickups_updated.emit(stamina_pickup)
+		print("stamina val: " + str(stamina_pickup))
