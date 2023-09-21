@@ -58,7 +58,7 @@ func _physics_process(delta):
 	elif Input.is_action_just_released("ui_sprint"):
 		speed = 50
 
-	var movement = speed * direction * delta
+	var movement = direction * speed * delta
 
 	if !is_attacking:
 		move_and_collide(movement)
@@ -108,10 +108,6 @@ func returned_direction(direction: Vector2):
 		return "side"
 	else:
 		return "side"
-
-
-func _on_animated_sprite_2d_animation_finished():
-	is_attacking = false
 
 
 func add_pickup(item):
