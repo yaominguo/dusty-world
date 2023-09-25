@@ -2,6 +2,17 @@ extends CharacterBody2D
 
 @export var speed = 50
 
+signal death
+
+var health = 100
+var max_health = 100
+var health_regen = 1
+
+var bullet_damage = 30
+var bullet_reload_time = 1000
+var bullet_fired_time = 0.5
+var bullet_scene = preload("res://Scenes/bullet.tscn")
+
 var animation
 var direction: Vector2
 var new_direaction = Vector2(0, 1)
@@ -10,14 +21,23 @@ var timer = 0
 var is_attacking = false
 var player
 
+
 func _ready():
 	player = get_tree().root.get_node("Main/Player")
 	rng.randomize()
+	
+	$AnimatedSprite2D.modulate.r = 1
+	$AnimatedSprite2D.modulate.g = 1
+	$AnimatedSprite2D.modulate.b = 1
+	$AnimatedSprite2D.modulate.a = 1
+
+func _process(delta):
+	health = min(health + health_regen * delta, max_health)
 
 func _physics_process(delta):
 	var movement = direction * speed * delta
 	var collision = move_and_collide(movement)
-	
+
 	if collision != null and collision.get_collider().name != "Player" and collision.get_collider().name != "EnemySpawner" and collision.get_collider().name != "Enemy":
 		# 当触碰到非玩家物体，转向，并重置timer
 		direction = direction.rotated(rng.randf_range(PI/4, PI/2))
@@ -31,8 +51,6 @@ func _physics_process(delta):
 		play_animations(direction)
 
 	if $AnimatedSprite2D.animation == "spawn":
-		print($AnimatedSprite2D.animation)
-		is_attacking = false
 		$Timer.start()
 		timer = 0
 
@@ -84,8 +102,33 @@ func returned_direction(_direction: Vector2):
 		return "side"
 	else:
 		return ""
+
 func spawn():
 	# create a animation delay
 	$AnimatedSprite2D.play("spawn")
 	is_attacking = true
 
+func hit(damage):
+	health -= damage
+	if health > 0:
+		$AnimationPlayer.play("damage")
+	else:
+		# 停止移动
+		$Timer.stop()
+		direction = Vector2.ZERO
+		# 停止生命恢复
+		set_process(false)
+		# 停止触发play_animations
+		is_attacking = true
+
+		$AnimatedSprite2D.play("death")
+		death.emit()
+
+func _on_animated_sprite_2d_animation_finished():
+	if $AnimatedSprite2D.animation == "spawn":
+		$Timer.start()
+		timer = 0
+	if $AnimatedSprite2D.animation == "death":
+		get_tree().queue_delete(self)
+
+	is_attacking = false

@@ -24,6 +24,11 @@ var ammo_pickup = 0
 var health_pickup = 0
 var stamina_pickup = 0
 
+var bullet_damage = 30
+var bullet_reload_time = 1000
+var bullet_fired_time = 0.5
+var bullet_scene = preload("res://Scenes/bullet.tscn")
+
 func _ready():
 	health_updated.emit(health, max_health)
 	stamina_updated.emit(stamina, max_stamina)
@@ -69,9 +74,17 @@ func _physics_process(delta):
 
 func _input(event):
 	if event.is_action_pressed("ui_attack"):
-		is_attacking = true
-		animation = "attack_" + returned_direction(new_direaction)
-		$AnimatedSprite2D.play(animation)
+		var now = Time.get_ticks_msec()
+		# 当冷却时间结束并且有子弹才可以发射
+		if now >= bullet_fired_time && ammo_pickup > 0:
+			is_attacking = true
+			animation = "attack_" + returned_direction(new_direaction)
+			$AnimatedSprite2D.play(animation)
+			# 设置冷却时间
+			bullet_fired_time = now + bullet_reload_time
+			# 更新子弹数量
+			ammo_pickup -= 1
+			ammo_pickups_updated.emit(ammo_pickup)
 	elif event.is_action_pressed("ui_consume_health"):
 		if health > 0 && health_pickup > 0:
 			health_pickup -= 1
@@ -123,3 +136,11 @@ func add_pickup(item):
 
 func _on_animated_sprite_2d_animation_finished():
 	is_attacking = false
+
+	if $AnimatedSprite2D.animation.begins_with("attack_"):
+		var bullet = bullet_scene.instantiate()
+		bullet.damage = bullet_damage
+		bullet.direction = new_direaction.normalized()
+		# 子弹生成位置应该在player位置再向前偏移4-5像素
+		bullet.position = position + new_direaction.normalized() * 4
+		get_tree().root.get_node("Main").add_child(bullet)

@@ -6313,6 +6313,9 @@ item = 2
 [node name="Pickup2" parent="." instance=ExtResource("11_3fs4m")]
 position = Vector2(92, 48)
 
+[node name="Pickup4" parent="." instance=ExtResource("11_3fs4m")]
+position = Vector2(137, 142)
+
 [node name="Pickup3" parent="." instance=ExtResource("11_3fs4m")]
 position = Vector2(76, 99)
 item = 1

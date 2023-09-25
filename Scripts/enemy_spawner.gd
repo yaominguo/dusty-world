@@ -6,7 +6,7 @@ extends Node2D
 
 var tilemap
 var enemy_count = 0
-var enemy_scene = preload("res://Scenes/enemy.tscn")
+var enemy_scene = load("res://Scenes/enemy.tscn")
 var rng = RandomNumberGenerator.new()
 
 func _ready():
@@ -26,6 +26,9 @@ func valid_spawn_location(position: Vector2):
 func spawn_enemy():
 	var enemy = enemy_scene.instantiate()
 	add_child(enemy)
+	enemy.name = "Enemy"
+
+	enemy.death.connect(_on_enemty_death)
 
 	var valid_location = false
 	while !valid_location:
@@ -40,3 +43,5 @@ func _on_timer_timeout():
 		spawn_enemy()
 		enemy_count += 1
 
+func _on_enemty_death():
+	enemy_count -= 1
