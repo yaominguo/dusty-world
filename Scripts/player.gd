@@ -107,19 +107,19 @@ func returned_direction(direction: Vector2):
 		$AnimatedSprite2D.flip_h = true
 		return "side"
 	else:
-		return "side"
+		return ""
 
 
 func add_pickup(item):
 	if item == Pickups.AMMO:
 		ammo_pickup += 3
 		ammo_pickups_updated.emit(ammo_pickup)
-		print("ammo val: " + str(ammo_pickup))
 	elif item == Pickups.HEALTH:
 		health_pickup += 1
 		health_pickups_updated.emit(health_pickup)
-		print("health val: " + str(health_pickup))
 	elif item == Pickups.STAMINA:
 		stamina_pickup += 1
 		stamina_pickups_updated.emit(stamina_pickup)
-		print("stamina val: " + str(stamina_pickup))
+
+func _on_animated_sprite_2d_animation_finished():
+	is_attacking = false

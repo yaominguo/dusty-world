@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dhg57405nx8mk"]
 
 [ext_resource type="Script" path="res://Scripts/pickup.gd" id="1_ath7y"]
-[ext_resource type="Texture2D" uid="uid://b423fkgdmg420" path="res://Assets/Icons/bone01a.png" id="2_ddd5s"]
+[ext_resource type="Texture2D" uid="uid://b6wahuhdh6mbg" path="res://Assets/Icons/shard_01i.png" id="2_u352r"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_co5s4"]
 size = Vector2(16, 14)
@@ -13,6 +13,6 @@ script = ExtResource("1_ath7y")
 shape = SubResource("RectangleShape2D_co5s4")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_ddd5s")
+texture = ExtResource("2_u352r")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
