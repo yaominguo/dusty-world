@@ -11,7 +11,7 @@ var health_regen = 1
 var bullet_damage = 30
 var bullet_reload_time = 1000
 var bullet_fired_time = 0.5
-var bullet_scene = preload("res://Scenes/bullet.tscn")
+var bullet_scene = preload("res://Scenes/enemy_bullet.tscn")
 
 var animation
 var direction: Vector2
@@ -21,11 +21,12 @@ var timer = 0
 var is_attacking = false
 var player
 
+var pickups_scene = preload("res://Scenes/pickup.tscn")
 
 func _ready():
 	player = get_tree().root.get_node("Main/Player")
 	rng.randomize()
-	
+
 	$AnimatedSprite2D.modulate.r = 1
 	$AnimatedSprite2D.modulate.g = 1
 	$AnimatedSprite2D.modulate.b = 1
@@ -33,6 +34,13 @@ func _ready():
 
 func _process(delta):
 	health = min(health + health_regen * delta, max_health)
+
+	var target = $RayCast2D.get_collider()
+	if target != null:
+		if target.name == "Player":
+			is_attacking = true
+			var animation = "attack_" + returned_direction(new_direaction)
+			$AnimatedSprite2D.play(animation)
 
 func _physics_process(delta):
 	var movement = direction * speed * delta
@@ -52,7 +60,10 @@ func _physics_process(delta):
 
 	if $AnimatedSprite2D.animation == "spawn":
 		$Timer.start()
-		timer = 0
+
+	# 使raycast朝向移动方向
+	if direction != Vector2.ZERO:
+		$RayCast2D.target_position = direction.normalized() * 50
 
 func sync_new_direction():
 	if direction != Vector2.ZERO:
@@ -113,6 +124,7 @@ func hit(damage):
 	if health > 0:
 		$AnimationPlayer.play("damage")
 	else:
+		$AnimatedSprite2D.play("death")
 		# 停止移动
 		$Timer.stop()
 		direction = Vector2.ZERO
@@ -120,9 +132,15 @@ func hit(damage):
 		set_process(false)
 		# 停止触发play_animations
 		is_attacking = true
-
-		$AnimatedSprite2D.play("death")
 		death.emit()
+
+		# 90%几率掉落物品
+		if rng.randf() < 0.9:
+			var pickup = pickups_scene.instantiate()
+			# 随机3种掉落物中的某1种
+			pickup.item = rng.randi() % 3
+			get_tree().root.get_node("Main").call_deferred("add_child", pickup)
+			pickup.position = position
 
 func _on_animated_sprite_2d_animation_finished():
 	if $AnimatedSprite2D.animation == "spawn":
@@ -132,3 +150,10 @@ func _on_animated_sprite_2d_animation_finished():
 		get_tree().queue_delete(self)
 
 	is_attacking = false
+
+	if $AnimatedSprite2D.animation.begins_with("attack_"):
+		var bullet = bullet_scene.instantiate()
+		bullet.damage = bullet_damage
+		bullet.direction = new_direaction.normalized()
+		bullet.position = player.position + new_direaction.normalized() * 4
+		get_tree().root.get_node("Main").add_child(bullet)

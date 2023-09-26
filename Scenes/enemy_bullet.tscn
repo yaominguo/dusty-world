@@ -1,0 +1,63 @@
+[gd_scene load_steps=9 format=3 uid="uid://cci44n8yhyt3d"]
+
+[ext_resource type="Script" path="res://Scripts/enemy_bullet.gd" id="1_o7kea"]
+[ext_resource type="Texture2D" uid="uid://c0x06v0gpmfeh" path="res://Assets/FX/Death Explosion.png" id="2_fsnma"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_57o7y"]
+size = Vector2(16, 15)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7rk28"]
+atlas = ExtResource("2_fsnma")
+region = Rect2(0, 0, 50, 55)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6mhml"]
+atlas = ExtResource("2_fsnma")
+region = Rect2(50, 0, 50, 55)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8kft3"]
+atlas = ExtResource("2_fsnma")
+region = Rect2(100, 0, 50, 55)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a4gnn"]
+atlas = ExtResource("2_fsnma")
+region = Rect2(200, 0, 50, 55)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1p1vc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7rk28")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6mhml")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8kft3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a4gnn")
+}],
+"loop": false,
+"name": &"impact",
+"speed": 10.0
+}]
+
+[node name="EnemyBullet" type="Area2D"]
+script = ExtResource("1_o7kea")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4.5)
+shape = SubResource("RectangleShape2D_57o7y")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.4, 0.4)
+sprite_frames = SubResource("SpriteFrames_1p1vc")
+animation = &"impact"
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

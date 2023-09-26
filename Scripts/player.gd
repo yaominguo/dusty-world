@@ -144,3 +144,12 @@ func _on_animated_sprite_2d_animation_finished():
 		# 子弹生成位置应该在player位置再向前偏移4-5像素
 		bullet.position = position + new_direaction.normalized() * 4
 		get_tree().root.get_node("Main").add_child(bullet)
+
+func hit(damage):
+	health -= damage
+	if health > 0:
+		$AnimationPlayer.play("damage")
+		health_updated.emit(health, max_health)
+	else:
+		set_process(false)
+		# todo: game over
