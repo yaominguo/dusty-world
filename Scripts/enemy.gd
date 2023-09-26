@@ -133,6 +133,7 @@ func hit(damage):
 		# 停止触发play_animations
 		is_attacking = true
 		death.emit()
+		player.update_xp(70)
 
 		# 90%几率掉落物品
 		if rng.randf() < 0.9:

@@ -5,6 +5,9 @@ signal stamina_updated
 signal ammo_pickups_updated
 signal health_pickups_updated
 signal stamina_pickups_updated
+signal xp_updated
+signal level_updated
+signal xp_requirements_updated
 
 @export var speed = 50
 
@@ -23,6 +26,9 @@ enum Pickups {AMMO, STAMINA, HEALTH}
 var ammo_pickup = 0
 var health_pickup = 0
 var stamina_pickup = 0
+var xp = 0
+var level = 1
+var xp_requirements = 100
 
 var bullet_damage = 30
 var bullet_reload_time = 1000
@@ -46,6 +52,11 @@ func _process(delta):
 	if updated_stamina != stamina:
 		stamina = updated_stamina
 		stamina_updated.emit(stamina, max_stamina)
+	# hide or show cursor
+	if get_tree().paused == false:
+		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _physics_process(delta):
 	var direction: Vector2
@@ -152,4 +163,47 @@ func hit(damage):
 		health_updated.emit(health, max_health)
 	else:
 		set_process(false)
-		# todo: game over
+		$AnimationPlayer.play("game_over")
+
+func update_xp(value):
+	xp += value
+	if xp >= xp_requirements:
+		# allow input
+		set_process_input(true)
+		# 展示popup
+		$UI/LevelUpPopup.popup_centered()
+		$UI/LevelUpPopup.visible = true
+		# 暂停游戏
+		get_tree().paused = true
+
+		xp = 0
+		level += 1
+		xp_requirements *= 2
+		max_health += 10
+		max_stamina += 10
+		ammo_pickup += 10
+		health_pickup += 5
+		stamina_pickup += 3
+
+		health_updated.emit(max_health, max_health)
+		stamina_updated.emit(max_stamina, max_stamina)
+		ammo_pickups_updated.emit(ammo_pickup)
+		health_pickups_updated.emit(health_pickup)
+		stamina_pickups_updated.emit(stamina_pickup)
+		xp_updated.emit(xp)
+
+		$UI/LevelUpPopup/Message/Rewards/LevelGained.text = "LV: " + str(level)
+		$UI/LevelUpPopup/Message/Rewards/HealthIncreaseGained.text = "+ MAX HP: " + str(max_health)
+		$UI/LevelUpPopup/Message/Rewards/StaminaIncreaseGained.text = "+ MAX SP: " + str(max_stamina)
+		$UI/LevelUpPopup/Message/Rewards/HealthPickupGained.text = "+ HEALTH: 5"
+		$UI/LevelUpPopup/Message/Rewards/StaminaPickupGained.text = "+ STAMINA: 3"
+		$UI/LevelUpPopup/Message/Rewards/AmmoPickupGained.text = "+ AMMO: 10"
+
+	xp_requirements_updated.emit(xp_requirements)
+	xp_updated.emit(xp)
+	level_updated.emit(level)
+
+
+func _on_confirm_pressed():
+	$UI/LevelUpPopup.visible = false
+	get_tree().paused = false
