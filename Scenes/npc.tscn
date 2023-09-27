@@ -1,0 +1,123 @@
+[gd_scene load_steps=18 format=3 uid="uid://cj6wl7q02w7y8"]
+
+[ext_resource type="Texture2D" uid="uid://byo6qpfqbr54h" path="res://Assets/Mobs/Coyote/Coyote Front Sheet.png" id="1_l6kk5"]
+[ext_resource type="Script" path="res://Scripts/npc.gd" id="1_msy1n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dbbwv"]
+size = Vector2(33, 35)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i6v8g"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(0, 0, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rrafj"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(70, 0, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5kpbe"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(140, 0, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g67sl"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(210, 0, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3n3qm"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(280, 0, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_syjy0"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(350, 0, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_41psy"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(420, 0, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2mvil"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(0, 140, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_leosw"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(70, 140, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gpjuk"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(140, 140, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jycn3"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(210, 140, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lph8a"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(280, 140, 70, 70)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7h0t5"]
+atlas = ExtResource("1_l6kk5")
+region = Rect2(350, 140, 70, 70)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_3kbn7"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i6v8g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rrafj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5kpbe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g67sl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3n3qm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_syjy0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_41psy")
+}],
+"loop": true,
+"name": &"idle_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2mvil")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_leosw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gpjuk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jycn3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lph8a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7h0t5")
+}],
+"loop": true,
+"name": &"talk_down",
+"speed": 5.0
+}]
+
+[node name="NPC" type="CharacterBody2D" groups=["NPC"]]
+process_mode = 3
+script = ExtResource("1_msy1n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-13.5, -2.5)
+shape = SubResource("RectangleShape2D_dbbwv")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_3kbn7")
+animation = &"idle_down"

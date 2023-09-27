@@ -43,6 +43,11 @@ func _ready():
 	health_pickups_updated.emit(health_pickup)
 	stamina_pickups_updated.emit(stamina_pickup)
 
+	$AnimatedSprite2D.modulate.r = 1
+	$AnimatedSprite2D.modulate.g = 1
+	$AnimatedSprite2D.modulate.b = 1
+	$AnimatedSprite2D.modulate.a = 1
+
 func _process(delta):
 	var updated_health = min(health + regen_health * delta, max_health)
 	if updated_health != health:
@@ -52,11 +57,11 @@ func _process(delta):
 	if updated_stamina != stamina:
 		stamina = updated_stamina
 		stamina_updated.emit(stamina, max_stamina)
-	# hide or show cursor
-	if get_tree().paused == false:
-		Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
-	else:
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# # hide or show cursor
+	# if get_tree().paused == false:
+	# 	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	# else:
+	# 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _physics_process(delta):
 	var direction: Vector2
@@ -79,6 +84,9 @@ func _physics_process(delta):
 	if !is_attacking:
 		move_and_collide(movement)
 		play_animations(direction)
+
+	if direction != Vector2.ZERO:
+		$RayCast2D.target_position = direction.normalized() * 50
 
 	if is_attacking and !$AnimatedSprite2D.is_playing():
 		is_attacking = false
@@ -108,6 +116,12 @@ func _input(event):
 			stamina = min(stamina + 50, max_stamina)
 			stamina_updated.emit(stamina, max_stamina)
 			stamina_pickups_updated.emit(stamina_pickup)
+	elif event.is_action_pressed("ui_interact"):
+		var target = $RayCast2D.get_collider()
+		if target != null:
+			if target.is_in_group("NPC"):
+				target.dialog()
+				return
 
 func play_animations(direction: Vector2):
 	if direction != Vector2.ZERO:
@@ -207,3 +221,20 @@ func update_xp(value):
 func _on_confirm_pressed():
 	$UI/LevelUpPopup.visible = false
 	get_tree().paused = false
+
+
+func _on_dialog_popup_dialog_opened():
+	get_tree().paused = true
+	$AnimationPlayer.play("typewriter")
+	set_physics_process(false)
+
+
+func _on_dialog_popup_dialog_closed():
+	get_tree().paused = false
+	set_physics_process(true)
+
+func _on_animation_player_animation_finished(_anim_name):
+	$AnimatedSprite2D.modulate.r = 1
+	$AnimatedSprite2D.modulate.g = 1
+	$AnimatedSprite2D.modulate.b = 1
+	$AnimatedSprite2D.modulate.a = 1
